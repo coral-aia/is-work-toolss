@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>周OKR登记 · 待完成事项精细跟踪</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #eef2f5;
+            font-family: 'Segoe UI', 'Roboto', 'Noto Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            color: #1e2a3a;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* 左侧边栏 */
+        .sidebar {
+            width: 260px;
+            background: #2c3e44;
+            color: #e0e6ed;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.06);
+            z-index: 10;
+        }
+
+        .datetime-panel {
+            padding: 18px 16px;
+            border-bottom: 1px solid #3f555d;
+            background: #24373e;
+        }
+
+        .current-date {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #f3e5c9;
+        }
+
+        .current-time {
+            font-size: 1.3rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin: 6px 0 4px 0;
+            color: #ffffff;
+        }
+
+        .holiday-info {
+            font-size: 0.7rem;
+            color: #bcd0da;
+            margin-top: 6px;
+            border-top: 1px solid #3f5a62;
+            padding-top: 6px;
+        }
+
+        .site-title {
+            padding: 16px 16px 8px 16px;
+        }
+
+        .site-title h1 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #f0f3f8;
+        }
+
+        .site-title p {
+            font-size: 0.6rem;
+            color: #9bb7c4;
+            margin-top: 2px;
+        }
+
+        .new-project-btn {
+            margin: 12px 12px 8px 12px;
+            background: #3d6b5e;
+            color: white;
+            border: none;
+            padding: 7px 0;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .project-list-container {
+            flex: 1;
+            padding: 0 10px 16px 10px;
+        }
+
+        .project-list-title {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #9bb7c4;
+            margin: 12px 0 6px 6px;
+            font-weight: 500;
+        }
+
+        .project-item {
+            background: #3a535c;
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #4e6f7a;
+            font-size: 0.8rem;
+        }
+
+        .project-item.active {
+            background: #4f6e78;
+            border-left: 3px solid #f3b33d;
+        }
+
+        .project-name {
+            font-weight: 500;
+            word-break: break-word;
+            max-width: 150px;
+            font-size: 0.8rem;
+            cursor: context-menu;
+        }
+
+        .project-stats {
+            font-size: 0.65rem;
+            background: #24454d;
+            padding: 2px 6px;
+            border-radius: 20px;
+        }
+
+        .delete-project {
+            background: none;
+            border: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #9bb7c4;
+            opacity: 0.6;
+        }
+
+        .delete-project:hover {
+            opacity: 1;
+            color: #fcb17a;
+        }
+
+        .backup-area {
+            margin: 12px;
+            padding: 10px 0;
+            border-top: 1px solid #3f555d;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .backup-btn {
+            background: #3f5b63;
+            border: none;
+            font-size: 0.65rem;
+            padding: 5px 10px;
+            border-radius: 16px;
+            cursor: pointer;
+            color: #e6f0f5;
+        }
+
+        .backup-btn:hover {
+            background: #5e7f8a;
+        }
+
+        /* 右侧主内容区 */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            background: #f8fafc;
+            padding: 20px 24px;
+        }
+
+        .projects-overview {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .project-card {
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0;
+        }
+
+        .project-card-header {
+            padding: 12px 16px;
+            background: #fefefe;
+            border-bottom: 1px solid #eef2f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .project-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e2f3c;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .project-name-span {
+            cursor: context-menu;
+        }
+
+        .priority-select {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            font-family: inherit;
+            color: #1e3a4b;
+            cursor: pointer;
+        }
+
+        .project-badge {
+            background: #eef2f6;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            color: #2c5c6e;
+        }
+
+        .collapse-icon {
+            font-size: 0.8rem;
+            color: #708d9a;
+        }
+
+        /* 细节表格 */
+        .details-table-wrapper {
+            padding: 0 16px 16px 16px;
+            overflow-x: auto;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.75rem;
+        }
+
+        .items-table th {
+            text-align: left;
+            padding: 10px 6px 8px 6px;
+            background: #f9fbfd;
+            font-weight: 600;
+            color: #2c5a6e;
+            border-bottom: 1px solid #e2edf2;
+            font-size: 0.65rem;
+        }
+
+        /* 工序明细主行 */
+        .item-main-row td {
+            padding: 10px 6px;
+            border-bottom: 1px solid #f0f4f8;
+            vertical-align: top;
+            background-color: #ffffff;
+        }
+
+        .item-textarea {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #dce5ec;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            background: #ffffff;
+            font-family: inherit;
+            resize: vertical;
+            line-height: 1.4;
+            transition: 0.1s;
+        }
+        .item-textarea:focus {
+            border-color: #7f9e8e;
+            outline: none;
+            background: #fefef9;
+        }
+
+        .delete-item-btn {
+            background: none;
+            border: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #a5bfce;
+            padding: 0 4px;
+        }
+        .delete-item-btn:hover {
+            color: #bc6f4c;
+        }
+
+        /* 待完成事项卡片区域 */
+        .remarks-container {
+            background: #fefefb;
+            border-top: 1px solid #f0f2f5;
+            padding: 8px 12px;
+        }
+        .remarks-title {
+            font-size: 0.6rem;
+            color: #8aaebd;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .remarks-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .remark-card {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 6px 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.7rem;
+            color: #2c5570;
+            border: 1px solid #e2edf2;
+            transition: 0.05s;
+            max-width: 320px;
+        }
+        .remark-card:hover {
+            background: #eef3f6;
+        }
+        .remark-checkbox {
+            margin-right: 2px;
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+            accent-color: #3d6b5e;
+        }
+        .remark-text {
+            word-break: break-word;
+            cursor: pointer;
+            padding: 2px 0;
+            flex: 1;
+        }
+        .remark-text[contenteditable="true"] {
+            background: white;
+            border-radius: 12px;
+            padding: 2px 6px;
+            outline: none;
+            box-shadow: 0 0 0 1px #3d6b5e;
+        }
+        .remark-time {
+            font-size: 0.55rem;
+            color: #8aaebd;
+            white-space: nowrap;
+        }
+        .delete-remark {
+            background: none;
+            border: none;
+            font-size: 0.7rem;
+            cursor: pointer;
+            color: #a5bfce;
+            padding: 0 2px;
+        }
+        .delete-remark:hover {
+            color: #bc6f4c;
+        }
+        .add-remark-btn {
+            background: none;
+            border: 1px dashed #bfd7e2;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            padding: 2px 12px;
+            cursor: pointer;
+            color: #5a7c8c;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .add-remark-btn:hover {
+            background: #eef3f6;
+            border-color: #8da99b;
+        }
+
+        .add-item-btn {
+            margin-top: 12px;
+            background: #f8fafc;
+            border: 1px solid #e2edf2;
+            padding: 4px 0;
+            width: 100%;
+            border-radius: 30px;
+            font-weight: 400;
+            cursor: pointer;
+            font-size: 0.7rem;
+            color: #5a7c8c;
+        }
+
+        .empty-projects-placeholder {
+            text-align: center;
+            padding: 48px 20px;
+            background: white;
+            border-radius: 24px;
+            color: #6a8e9c;
+            border: 1px solid #e2edf2;
+            font-size: 0.85rem;
+        }
+
+        .toast-notify {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1e2f3c;
+            color: #f0ede8;
+            padding: 6px 14px;
+            border-radius: 28px;
+            font-size: 0.7rem;
+            z-index: 1000;
+            animation: fadeOut 2.2s forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: translateY(0);}
+            70% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; transform: translateY(6px);}
+        }
+
+        .project-card.completed-collapsed .details-table-wrapper {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="datetime-panel">
+        <div class="current-date" id="currentDate"></div>
+        <div class="current-time" id="currentTime"></div>
+        <div class="holiday-info" id="holidayInfo"></div>
+    </div>
+    <div class="site-title">
+        <h1>周OKR登记</h1>
+        <p>工序明细 · 待完成事项 · 精细跟踪</p>
+    </div>
+    <button class="new-project-btn" id="newProjectBtn">➕ 新建周目标</button>
+    <div class="project-list-container">
+        <div class="project-list-title">📌 快速导航</div>
+        <div id="projectList"></div>
+    </div>
+    <div class="backup-area">
+        <button class="backup-btn" id="exportCsvBtn">📄 CSV备份</button>
+        <button class="backup-btn" id="exportExcelBtn">📊 Excel</button>
+        <button class="backup-btn" id="importBackupBtn">📂 导入</button>
+        <input type="file" id="importFileInput" accept=".json" style="display: none;">
+    </div>
+</div>
+
+<div class="main" id="mainArea">
+    <div id="projectsOverviewContainer" class="projects-overview"></div>
+</div>
+
+<script>
+    // ==================== 日期、时间、节日节气 ====================
+    const staticHolidays = {"01-01":"元旦","02-14":"情人节","03-08":"妇女节","05-01":"劳动节","06-01":"儿童节","07-01":"建党节","08-01":"建军节","09-10":"教师节","10-01":"国庆节","12-25":"圣诞节"};
+    const dynamicHolidays = {"2025-01-29":"春节","2025-04-04":"清明节","2025-05-31":"端午节","2025-10-06":"中秋节","2026-02-17":"春节","2026-04-05":"清明节","2026-06-19":"端午节","2026-09-25":"中秋节","2026-10-01":"国庆节","2027-02-06":"春节","2027-04-05":"清明节","2027-06-09":"端午节","2027-09-15":"中秋节"};
+    const solarTerms = {
+        "2025-02-03":"立春","2025-02-18":"雨水","2025-03-05":"惊蛰","2025-03-20":"春分","2025-04-04":"清明","2025-04-20":"谷雨","2025-05-05":"立夏","2025-05-21":"小满",
+        "2026-02-04":"立春","2026-02-18":"雨水","2026-03-05":"惊蛰","2026-03-20":"春分","2026-04-04":"清明","2026-04-20":"谷雨","2026-05-05":"立夏","2026-05-21":"小满",
+        "2027-02-04":"立春","2027-02-19":"雨水","2027-03-06":"惊蛰","2027-03-21":"春分","2027-04-05":"清明","2027-04-20":"谷雨","2027-05-06":"立夏","2027-05-21":"小满"
+    };
+    function getHolidayAndTerm() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const dateKey = `${year}-${month}-${day}`;
+        const mmdd = `${month}-${day}`;
+        let holiday = staticHolidays[mmdd] || '';
+        let dynamicHoliday = dynamicHolidays[dateKey] || '';
+        let term = solarTerms[dateKey] || '';
+        let result = [];
+        if (dynamicHoliday) result.push(`📅 ${dynamicHoliday}`);
+        else if (holiday) result.push(`📅 ${holiday}`);
+        if (term) result.push(`🌾 ${term}`);
+        if (result.length === 0) result.push('📌 常规工作日');
+        return result.join(' · ');
+    }
+    function updateDateTime() {
+        const now = new Date();
+        document.getElementById('currentDate').innerHTML = now.toLocaleDateString('zh-CN', { year:'numeric', month:'numeric', day:'numeric', weekday:'short' });
+        document.getElementById('currentTime').innerHTML = now.toLocaleTimeString('zh-CN', { hour12: false });
+        document.getElementById('holidayInfo').innerHTML = getHolidayAndTerm();
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    // ==================== 数据模型 ====================
+    let projects = [];
+    let currentProjectId = null;
+    const STORAGE_KEY = 'weekly_okr_remark_status';
+
+    function loadData() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(raw) {
+            try {
+                const parsed = JSON.parse(raw);
+                if(parsed.projects) projects = parsed.projects;
+                else initSample();
+            } catch(e) { initSample(); }
+        } else { initSample(); }
+        normalize();
+        saveToLocal();
+    }
+
+    function normalize() {
+        projects.forEach(p => {
+            if(!p.priority) p.priority = 'normal';
+            if(!p.items) p.items = [];
+            p.items.forEach(i => {
+                if(!i.remarks) i.remarks = [];
+                i.remarks.forEach(r => {
+                    if(!r.id) r.id = Date.now() + '-' + Math.random();
+                    if(!r.createdAt) r.createdAt = new Date().toISOString();
+                    if(r.completed === undefined) r.completed = false;
+                    if(!r.completedAt) r.completedAt = null;
+                });
+                delete i.completed;
+                delete i.completedAt;
+            });
+        });
+    }
+
+    function initSample() {
+        projects = [
+            { id: "proj_1", name: "研发效能提升", priority: "urgent", items: [
+                { id: "itm1", content: "优化CI流水线耗时", remarks: [
+                    { id: "r1", content: "增加缓存预热配置", completed: true, completedAt: new Date(Date.now()-86400000).toISOString(), createdAt: new Date(Date.now()-2*86400000).toISOString() },
+                    { id: "r2", content: "检查Docker层缓存", completed: false, completedAt: null, createdAt: new Date().toISOString() }
+                ]}
+            ]},
+            { id: "proj_2", name: "Q2产品路线图", priority: "normal", items: [
+                { id: "itm2", content: "竞品分析报告", remarks: [
+                    { id: "r3", content: "收集三家主流竞品数据", completed: true, completedAt: new Date(Date.now()-3*86400000).toISOString(), createdAt: new Date(Date.now()-5*86400000).toISOString() },
+                    { id: "r4", content: "输出对比分析PPT", completed: false, completedAt: null, createdAt: new Date().toISOString() }
+                ]}
+            ]}
+        ];
+    }
+
+    function saveToLocal() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ projects })); }
+    function genId() { return Date.now() + '-' + Math.random().toString(36).substring(2, 8); }
+
+    function renderAll() {
+        renderProjectList();
+        renderProjectsCards();
+    }
+
+    function renderProjectList() {
+        const container = document.getElementById('projectList');
+        if(!container) return;
+        if(projects.length === 0) { container.innerHTML = '<div style="padding:20px;text-align:center;color:#9bb7c4;">暂无目标</div>'; return; }
+        let html = '';
+        projects.forEach(proj => {
+            let totalRemarks = 0, completedRemarks = 0;
+            proj.items.forEach(item => {
+                totalRemarks += item.remarks.length;
+                completedRemarks += item.remarks.filter(r => r.completed).length;
+            });
+            const activeClass = (currentProjectId === proj.id) ? 'active' : '';
+            let priorityIcon = proj.priority === 'urgent' ? '🔴' : (proj.priority === 'normal' ? '🟡' : '🟢');
+            html += `<div class="project-item ${activeClass}" data-id="${proj.id}">
+                        <div class="project-name" data-id="${proj.id}">${priorityIcon} ${escapeHtml(proj.name)}</div>
+                        <div class="project-stats">${completedRemarks}/${totalRemarks}</div>
+                        <button class="delete-project" data-id="${proj.id}">🗑️</button>
+                    </div>`;
+        });
+        container.innerHTML = html;
+        document.querySelectorAll('.project-item').forEach(el => {
+            const pid = el.getAttribute('data-id');
+            el.addEventListener('click', (e) => { if(!e.target.classList.contains('delete-project')) setCurrent(pid); });
+            const del = el.querySelector('.delete-project');
+            if(del) del.addEventListener('click', (e) => { e.stopPropagation(); if(confirm('删除项目？')) deleteProject(pid); });
+        });
+        document.querySelectorAll('.project-name').forEach(span => {
+            span.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                const pid = span.getAttribute('data-id');
+                const proj = projects.find(p => p.id === pid);
+                if(proj) {
+                    let newName = prompt('重命名项目', proj.name);
+                    if(newName && newName.trim()) { proj.name = newName.trim(); saveToLocal(); renderAll(); showToast('已重命名'); }
+                }
+            });
+        });
+    }
+
+    function setCurrent(pid) { currentProjectId = pid; renderAll(); }
+    function deleteProject(pid) {
+        projects = projects.filter(p => p.id !== pid);
+        if(currentProjectId === pid) currentProjectId = projects.length ? projects[0].id : null;
+        saveToLocal();
+        renderAll();
+        showToast('项目已删除');
+    }
+
+    function renderProjectsCards() {
+        const container = document.getElementById('projectsOverviewContainer');
+        if(!container) return;
+        if(projects.length === 0) { container.innerHTML = `<div class="empty-projects-placeholder">✨ 暂无周目标，点击左侧新建</div>`; return; }
+
+        let cardsHtml = '';
+        projects.forEach(proj => {
+            let totalRemarks = 0, completedRemarks = 0;
+            proj.items.forEach(item => {
+                totalRemarks += item.remarks.length;
+                completedRemarks += item.remarks.filter(r => r.completed).length;
+            });
+            const allRemarksCompleted = totalRemarks > 0 && completedRemarks === totalRemarks;
+            const collapsedClass = allRemarksCompleted ? 'completed-collapsed' : '';
+            const collapsedIcon = allRemarksCompleted ? '▶' : '▼';
+            cardsHtml += `
+                <div class="project-card ${collapsedClass}" id="card-${proj.id}">
+                    <div class="project-card-header toggle-collapse" data-id="${proj.id}">
+                        <div class="project-title">
+                            <span class="project-name-span" data-id="${proj.id}">${escapeHtml(proj.name)}</span>
+                            <select class="priority-select" data-proj-id="${proj.id}">
+                                <option value="urgent" ${proj.priority==='urgent'?'selected':''}>🔴 紧急重要</option>
+                                <option value="normal" ${proj.priority==='normal'?'selected':''}>🟡 中等紧急</option>
+                                <option value="low" ${proj.priority==='low'?'selected':''}>🟢 不紧急</option>
+                            </select>
+                            <span class="project-badge">${completedRemarks}/${totalRemarks}</span>
+                        </div>
+                        <div class="collapse-icon">${collapsedIcon}</div>
+                    </div>
+                    <div class="details-table-wrapper">
+                        <table class="items-table" id="items-table-${proj.id}">
+                            <thead><tr><th>工序明细</th><th style="width:32px"></th></thead>
+                            <tbody id="items-tbody-${proj.id}"></tbody>
+                        </table>
+                        <button class="add-item-btn" data-id="${proj.id}">+ 添加工序明细</button>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = cardsHtml;
+
+        // 优先级和折叠事件
+        document.querySelectorAll('.priority-select').forEach(sel => {
+            sel.addEventListener('change', (e) => {
+                const proj = projects.find(p => p.id === sel.getAttribute('data-proj-id'));
+                if(proj) { proj.priority = e.target.value; saveToLocal(); renderAll(); showToast('优先级已更新'); }
+            });
+        });
+        document.querySelectorAll('.project-name-span').forEach(span => {
+            span.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                const pid = span.getAttribute('data-id');
+                const proj = projects.find(p => p.id === pid);
+                if(proj) { let n = prompt('新项目名', proj.name); if(n?.trim()) { proj.name = n.trim(); saveToLocal(); renderAll(); } }
+            });
+        });
+        document.querySelectorAll('.project-card-header.toggle-collapse').forEach(header => {
+            header.removeEventListener('click', header._listener);
+            const listener = () => {
+                const card = header.closest('.project-card');
+                if(card) {
+                    const isCollapsed = card.classList.contains('completed-collapsed');
+                    if(isCollapsed) { card.classList.remove('completed-collapsed'); header.querySelector('.collapse-icon').innerHTML = '▼'; }
+                    else { card.classList.add('completed-collapsed'); header.querySelector('.collapse-icon').innerHTML = '▶'; }
+                }
+            };
+            header.addEventListener('click', listener);
+            header._listener = listener;
+        });
+
+        // 渲染工序明细行 + 待完成事项卡片
+        projects.forEach(proj => {
+            const tbody = document.getElementById(`items-tbody-${proj.id}`);
+            if(!tbody) return;
+            let rowsHtml = '';
+            proj.items.forEach(item => {
+                rowsHtml += `
+                    <tr class="item-main-row" data-item-id="${item.id}">
+                        <td><textarea class="item-textarea item-content-input" rows="1" placeholder="工序明细">${escapeHtml(item.content)}</textarea></td>
+                        <td><button class="delete-item-btn" data-item-id="${item.id}">✕</button></td>
+                    </tr>
+                    <tr class="remarks-row" data-item-id="${item.id}">
+                        <td colspan="2" style="padding: 0;">
+                            <div class="remarks-container" data-item-id="${item.id}">
+                                <div class="remarks-title">📌 待完成事项（勾选即完成）</div>
+                                <div class="remarks-list" id="remarks-list-${item.id}"></div>
+                                <button class="add-remark-btn" data-item-id="${item.id}">+ 待完成</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = rowsHtml;
+
+            // 绑定每个工序明细的事件
+            proj.items.forEach(item => {
+                const mainRow = tbody.querySelector(`tr.item-main-row[data-item-id="${item.id}"]`);
+                if(!mainRow) return;
+                const contentTA = mainRow.querySelector('.item-content-input');
+                const delBtn = mainRow.querySelector('.delete-item-btn');
+
+                contentTA.addEventListener('change', () => { item.content = contentTA.value; saveToLocal(); renderAll(); });
+                delBtn.addEventListener('click', () => {
+                    if(confirm('删除此项及其所有待完成事项？')) {
+                        const idx = proj.items.findIndex(i => i.id === item.id);
+                        if(idx !== -1) proj.items.splice(idx, 1);
+                        saveToLocal();
+                        renderAll();
+                        showToast('已删除');
+                    }
+                });
+
+                // 渲染待完成事项卡片列表
+                const remarksListDiv = document.getElementById(`remarks-list-${item.id}`);
+                if(remarksListDiv) {
+                    let remarksHtml = '';
+                    (item.remarks || []).forEach(rem => {
+                        const checkedAttr = rem.completed ? 'checked' : '';
+                        const completedAtStr = rem.completedAt ? new Date(rem.completedAt).toLocaleString() : '';
+                        const timeDisplay = rem.completed ? ` ✅ ${completedAtStr}` : (rem.createdAt ? ` 📅 ${new Date(rem.createdAt).toLocaleDateString()}` : '');
+                        remarksHtml += `
+                            <div class="remark-card" data-rem-id="${rem.id}">
+                                <input type="checkbox" class="remark-checkbox" ${checkedAttr} data-rem-id="${rem.id}">
+                                <span class="remark-text" contenteditable="false">${escapeHtml(rem.content)}</span>
+                                <span class="remark-time">${timeDisplay}</span>
+                                <button class="delete-remark" data-rem-id="${rem.id}">✕</button>
+                            </div>
+                        `;
+                    });
+                    remarksListDiv.innerHTML = remarksHtml;
+
+                    // 绑定待完成事项复选框
+                    const checkboxes = remarksListDiv.querySelectorAll('.remark-checkbox');
+                    checkboxes.forEach(cb => {
+                        const remId = cb.getAttribute('data-rem-id');
+                        const remark = item.remarks.find(r => r.id === remId);
+                        if(remark) {
+                            cb.addEventListener('change', (e) => {
+                                const nowCompleted = e.target.checked;
+                                if(nowCompleted && !remark.completed) {
+                                    remark.completed = true;
+                                    remark.completedAt = new Date().toISOString();
+                                    showToast(`✅ 事项完成: ${remark.content.substring(0, 30)}`);
+                                } else if(!nowCompleted && remark.completed) {
+                                    remark.completed = false;
+                                    remark.completedAt = null;
+                                    showToast(`↩️ 撤回事项: ${remark.content.substring(0, 30)}`);
+                                }
+                                saveToLocal();
+                                // 检查项目是否所有待完成事项完成，决定折叠
+                                let allRemarksDone = true;
+                                for (let p of projects) {
+                                    for (let it of p.items) {
+                                        for (let r of it.remarks) {
+                                            if (!r.completed) { allRemarksDone = false; break; }
+                                        }
+                                        if (!allRemarksDone) break;
+                                    }
+                                    if (!allRemarksDone) break;
+                                }
+                                const card = document.getElementById(`card-${proj.id}`);
+                                if(card) {
+                                    if(allRemarksDone && !card.classList.contains('completed-collapsed')) {
+                                        card.classList.add('completed-collapsed');
+                                        const icon = card.querySelector('.collapse-icon');
+                                        if(icon) icon.innerHTML = '▶';
+                                        showToast(`🏆 项目“${proj.name}”全部待完成事项完成，已折叠`);
+                                    } else if(!allRemarksDone && card.classList.contains('completed-collapsed')) {
+                                        card.classList.remove('completed-collapsed');
+                                        const icon = card.querySelector('.collapse-icon');
+                                        if(icon) icon.innerHTML = '▼';
+                                    }
+                                }
+                                renderAll();
+                            });
+                        }
+                    });
+
+                    // 绑定待完成事项编辑（双击）
+                    const remarkCards = remarksListDiv.querySelectorAll('.remark-card');
+                    remarkCards.forEach(card => {
+                        const textSpan = card.querySelector('.remark-text');
+                        const remId = card.getAttribute('data-rem-id');
+                        const remark = item.remarks.find(r => r.id === remId);
+                        if(!remark) return;
+
+                        textSpan.addEventListener('dblclick', (e) => {
+                            e.stopPropagation();
+                            if(textSpan.getAttribute('contenteditable') === 'true') return;
+                            textSpan.setAttribute('contenteditable', 'true');
+                            textSpan.focus();
+                        });
+                        textSpan.addEventListener('blur', () => {
+                            if(textSpan.getAttribute('contenteditable') === 'true') {
+                                const newVal = textSpan.innerText.trim();
+                                if(newVal) remark.content = newVal;
+                                else remark.content = "（空）";
+                                textSpan.setAttribute('contenteditable', 'false');
+                                saveToLocal();
+                                showToast('事项已更新');
+                            }
+                        });
+                        textSpan.addEventListener('keydown', (e) => { if(e.key === 'Enter') { e.preventDefault(); textSpan.blur(); } });
+
+                        const delRemarkBtn = card.querySelector('.delete-remark');
+                        if(delRemarkBtn) {
+                            delRemarkBtn.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                if(confirm('删除此待完成事项？')) {
+                                    const idx = item.remarks.findIndex(r => r.id === remId);
+                                    if(idx !== -1) item.remarks.splice(idx, 1);
+                                    saveToLocal();
+                                    renderAll();
+                                    showToast('事项已删除');
+                                }
+                            });
+                        }
+                    });
+
+                    // 添加待完成事项按钮
+                    const addRemarkBtn = document.querySelector(`.add-remark-btn[data-item-id="${item.id}"]`);
+                    if(addRemarkBtn) {
+                        addRemarkBtn.addEventListener('click', () => {
+                            let newContent = prompt('请输入待完成事项内容：');
+                            if(newContent && newContent.trim()) {
+                                item.remarks.push({
+                                    id: genId(),
+                                    content: newContent.trim(),
+                                    createdAt: new Date().toISOString(),
+                                    completed: false,
+                                    completedAt: null
+                                });
+                                saveToLocal();
+                                renderAll();
+                                showToast('待完成事项已添加');
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+        // 添加工序明细按钮
+        document.querySelectorAll('.add-item-btn').forEach(btn => {
+            const projId = btn.getAttribute('data-id');
+            btn.addEventListener('click', () => {
+                const proj = projects.find(p => p.id === projId);
+                if(proj) {
+                    proj.items.push({ id: genId(), content: "", remarks: [] });
+                    saveToLocal();
+                    renderAll();
+                    showToast('新增工序明细');
+                }
+            });
+        });
+    }
+
+    function createNewProject() {
+        let name = prompt("新建周目标 / 项目名称", "新目标");
+        if(!name) return;
+        name = name.trim();
+        if(!name) return;
+        projects.push({ id: genId(), name: name, priority: 'normal', items: [] });
+        saveToLocal();
+        setCurrent(projects[projects.length-1].id);
+        renderAll();
+        showToast(`目标“${name}”已建立`);
+    }
+
+    // CSV备份（保留完整字段）
+    function exportCsvBackup() {
+        let rows = ["项目名称,优先级,工序明细,待完成事项,事项状态,事项完成时间,事项创建时间"];
+        projects.forEach(proj => {
+            const plabel = proj.priority==='urgent'?'紧急重要':(proj.priority==='normal'?'中等紧急':'不紧急');
+            proj.items.forEach(item => {
+                (item.remarks || []).forEach(rem => {
+                    rows.push([
+                        escapeCsv(proj.name),
+                        escapeCsv(plabel),
+                        escapeCsv(item.content),
+                        escapeCsv(rem.content),
+                        rem.completed ? "已完成" : "未完成",
+                        rem.completedAt ? new Date(rem.completedAt).toLocaleString() : "",
+                        new Date(rem.createdAt).toLocaleString()
+                    ].join(","));
+                });
+            });
+        });
+        const blob = new Blob(["\uFEFF" + rows.join("\n")], {type: "text/csv;charset=utf-8;"});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `okr_tasks_status_${new Date().toISOString().slice(0,19)}.csv`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+        showToast("CSV备份已导出");
+    }
+
+    // Excel导出（仅四列：周目标、工序明细、待完成事项、是否完成）
+    function exportExcelReadable() {
+        let rows = ["周目标\t工序明细\t待完成事项\t是否完成"];
+        projects.forEach(proj => {
+            proj.items.forEach(item => {
+                (item.remarks || []).forEach(rem => {
+                    rows.push([
+                        proj.name,
+                        item.content,
+                        rem.content,
+                        rem.completed ? "已完成" : "未完成"
+                    ].map(c => String(c).replace(/[\t\n]/g, ' ')).join("\t"));
+                });
+            });
+        });
+        const blob = new Blob(["\uFEFF" + rows.join("\n")], {type: "application/vnd.ms-excel"});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `okr_export_${new Date().toISOString().slice(0,19)}.xls`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+        showToast("Excel已导出（周目标/工序明细/待完成事项/是否完成）");
+    }
+
+    function importBackup() {
+        const input = document.getElementById('importFileInput');
+        input.click();
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    let content = ev.target.result;
+                    if(content.startsWith("//")) content = content.substring(content.indexOf("\n"));
+                    const imported = JSON.parse(content);
+                    if(imported.projects && Array.isArray(imported.projects)) {
+                        if(confirm("导入会覆盖所有数据，是否继续？")) {
+                            projects = imported.projects;
+                            normalize();
+                            saveToLocal();
+                            currentProjectId = projects.length ? projects[0].id : null;
+                            renderAll();
+                            showToast("数据已恢复");
+                        }
+                    } else throw new Error("格式错误");
+                } catch(err) { alert("文件无效，请导入本工具导出的JSON备份"); }
+                input.value = '';
+            };
+            reader.readAsText(file);
+        };
+    }
+
+    function escapeCsv(str) { if(!str) return ""; str=String(str); if(str.includes(",")||str.includes("\"")||str.includes("\n")) { str=str.replace(/"/g,'""'); return `"${str}"`; } return str; }
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m=> m==='&'? '&amp;' : m==='<'? '&lt;' : '&gt;'); }
+    function showToast(msg) { const t=document.createElement('div'); t.className='toast-notify'; t.innerText=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2200); }
+
+    document.getElementById('newProjectBtn').addEventListener('click', createNewProject);
+    document.getElementById('exportCsvBtn').addEventListener('click', exportCsvBackup);
+    document.getElementById('exportExcelBtn').addEventListener('click', exportExcelReadable);
+    document.getElementById('importBackupBtn').addEventListener('click', importBackup);
+
+    loadData();
+    if(projects.length) currentProjectId = projects[0].id;
+    renderAll();
+</script>
+</body>
+</html>

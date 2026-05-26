@@ -51,12 +51,6 @@ When all to-dos under a process detail are done, the corresponding project card 
 
 ---
 
-## 🖼️ Preview
-
-> (Insert a screenshot or GIF here to show the tool in action)
-
-![Screenshot](screenshot.png)
-
 *Left sidebar for project list + right side card-style board. Under each project you can expand process details and to-do items.*
 
 ---
@@ -151,6 +145,8 @@ If this tool helps you, please give it a ⭐️ so more people can find it.
 
 **它不是又一个简单的清单，而是一个能让你把每件破事儿都盯死的工作台。**
 
+<img width="1383" height="874" alt="picture" src="https://github.com/user-attachments/assets/e25519ea-0242-45de-9abb-85c8dcd38627" />
+
 ---
 
 ## 🚀 核心功能
@@ -185,13 +181,6 @@ If this tool helps you, please give it a ⭐️ so more people can find it.
 - 无服务器、无账号、无追踪  
 - 支持导出 CSV 备份，可自行存档或迁移
 
----
-
-## 🖼️ 界面预览
-
-![OKR页面示意图](images/picture.png)
-
-*左侧项目列表 + 右侧卡片式看板，每个项目下可展开工序和待办事项。*
 
 ---
 

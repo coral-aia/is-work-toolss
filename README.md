@@ -190,7 +190,7 @@ If this tool helps you, please give it a ⭐️ so more people can find it.
 
 > （建议在此处插入截图或动图，展示工具实际效果）
 
-![主界面截图](screenshot.png)
+![主界面截图](picture.png)
 *左侧项目列表 + 右侧卡片式看板，每个项目下可展开工序和待办事项。*
 
 ---

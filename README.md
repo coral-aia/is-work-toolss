@@ -1,4 +1,4 @@
-<img width="1383" height="874" alt="picture" src="https://github.com/user-attachments/assets/e25519ea-0242-45de-9abb-85c8dcd38627" /># 📋 Weekly OKR Tracker – Unpack Your Messy Workload
+# 📋 Weekly OKR Tracker – Unpack Your Messy Workload
 
 > A pure front-end, three-level task management tool that helps you track every small action across multiple parallel tasks without missing a thing.
 
@@ -14,6 +14,7 @@ So I built this **OKR planner** by hand.
 
 It’s not just another to-do list. It’s a workstation that helps you keep every single piece of work under control.
 
+<img width="1383" height="874" alt="picture" src="https://github.com/user-attachments/assets/e25519ea-0242-45de-9abb-85c8dcd38627" />
 ---
 
 ## 🚀 Key Features

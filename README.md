@@ -1,4 +1,4 @@
-# 📋 Weekly OKR Tracker – Unpack Your Messy Workload
+<img width="1383" height="874" alt="picture" src="https://github.com/user-attachments/assets/e25519ea-0242-45de-9abb-85c8dcd38627" /># 📋 Weekly OKR Tracker – Unpack Your Messy Workload
 
 > A pure front-end, three-level task management tool that helps you track every small action across multiple parallel tasks without missing a thing.
 
@@ -188,9 +188,8 @@ If this tool helps you, please give it a ⭐️ so more people can find it.
 
 ## 🖼️ 界面预览
 
-> （建议在此处插入截图或动图，展示工具实际效果）
+![OKR页面示意图](images/picture.png)
 
-![主界面截图](picture.png)
 *左侧项目列表 + 右侧卡片式看板，每个项目下可展开工序和待办事项。*
 
 ---
